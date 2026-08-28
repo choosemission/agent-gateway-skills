@@ -1,0 +1,46 @@
+# ---- macOS ----
+.DS_Store
+._*
+
+# ---- Editors ----
+.vscode/
+.idea/
+*.swp
+*~
+
+# ---- Local skill installs ----
+# `npx skills add` defaults to PROJECT scope, so testing this repo's own skill
+# from inside the repo drops these here. They are machine state, not content.
+.agents/
+.skill-lock.json
+skills-lock.json
+.claude/skills/
+.claude/settings.local.json
+
+# ---- Packaged skill bundles ----
+# Build artefacts. Publish as release assets rather than committing them —
+# a committed bundle drifts from skills/ and doubles the repo's weight.
+*.zip
+*.tar.gz
+
+# ---- Skill eval and optimisation output ----
+# Written by skill-creator when running evals/ or optimising the description.
+opt-results/
+opt-run.log
+eval-results/
+
+# ---- Local probe configuration ----
+# scripts/verify-claims.sh reads GATEWAY_HOST, ACCESS_POINT_URL and TARGET_URL
+# from the environment. A local .env holding a real gateway host or access
+# point must never be committed.
+.env
+.env.*
+!.env.example
+
+# ---- Python (scripts/validate.py) ----
+__pycache__/
+*.py[cod]
+
+# ---- Node / npx ----
+node_modules/
+npm-debug.log*

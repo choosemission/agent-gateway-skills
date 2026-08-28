@@ -1,0 +1,25 @@
+{
+  "name": "agent-gateway-skills",
+  "version": "0.1.0",
+  "description": "EXPERIMENTAL \u2014 Configure and debug an Agent Surface on an Affinidi Agent Gateway \u2014 the surface object model, source authentication, agent identity, OPA policy, credential delegation, and closing the ungoverned path to your resource.",
+  "author": {
+    "name": "MISSION",
+    "url": "https://choosemission.com"
+  },
+  "homepage": "https://github.com/choosemission/agent-gateway-skills",
+  "repository": "https://github.com/choosemission/agent-gateway-skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "a2a",
+    "agents",
+    "gateway",
+    "affinidi",
+    "identity",
+    "opa",
+    "did"
+  ],
+  "skills": [
+    "./skills/affinidi-agent-surfaces"
+  ]
+}
