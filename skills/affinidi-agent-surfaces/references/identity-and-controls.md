@@ -80,6 +80,11 @@ Configuring it:
    fields are declared`.
 5. Optionally mark fields **required** (requests omitting them are rejected) or
    give them **value constraints** (only a named model or provider may call).
+   Observed September 2026 on one hosted gateway: an inbound schema whose marked,
+   required `name` was absent from the payload saved without complaint, then
+   refused every message with `422 identity_validation_failed: Identity field
+   'name' not found in payload`. Whether `required` or the `x-identity` marker
+   triggers that 422 is not tested.
 
 Rather than hand-write the schema, **capture a live payload**: *Capture Identity
 Payload* exposes a temporary endpoint with automatic expiry; point your client at

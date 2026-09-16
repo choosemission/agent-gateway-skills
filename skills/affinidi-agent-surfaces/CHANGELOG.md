@@ -4,6 +4,18 @@ Each entry records what changed and **which gateway version it was checked
 against**. A participant hitting a contradiction can then tell "stale" from
 "wrong".
 
+## Unreleased
+
+**Added — a schema mismatch on the inbound leg is loud.** A flat response-leg
+schema dropped on the inbound leg of a client that nests its descriptor saved
+without complaint, then refused every message with `422
+identity_validation_failed: Identity field 'name' not found in payload`. The
+error names the field, not the leg or schema, so it reads like a client bug.
+Observed September 2026 on one hosted gateway, reported by a Lab reviewer (#4).
+Troubleshooting gains the row; `identity-and-controls.md` §1 step 5 gains the
+observed error; `CLAIMS.md` B16. What triggers it, the reverse swap and MCP
+surfaces remain unrecorded.
+
 ## 1.1.0 — 28 August 2026
 
 Checked against a live gateway on **`agentgateway.affinidi.io`** (A2A surface,
