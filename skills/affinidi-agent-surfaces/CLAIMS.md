@@ -11,6 +11,7 @@ re-verification mechanical instead of a re-read.
 | **G** | *Affinidi Trust Fabric — Agent Gateway Reference Guide* v0.3.10, August 2026, with page |
 | **O** | Observed on a running gateway, with date |
 | **A** | Direct guidance from the Affinidi team, August 2026 |
+| **D** | docs.affinidi.com page, with URL and date checked |
 
 **Verified against:** Reference Guide v0.3.10 · gateway observations from
 `train-soap.trustgateway.affinidi.io` (July–24 Aug 2026, since deprovisioned)
@@ -36,6 +37,12 @@ cost from every user.
 | C1 | Policy package for a surface-attached policy | **G p97** `package surface.policy` · **G p86** `package gateway.authz` · **O** `surface.policy` | Presents all three, tells the reader to take it from a working policy or the console template |
 | C2 | OPA policy input shape | **G p86** `input.caller.jwt_bearer.*` · **G p97** `input.agent.*` · **O** `input.jwt.*`, `input.gateway.direction` | Presents all three, tells the reader to dump `input` on a test surface |
 | C3 | Gateway's OAuth callback path for delegation | **G p80** `https://<host>/oauth/callback/<provider>` · **O** (Jul 2026) `https://<host>/v1/identity/oauth/callback/<provider>` | Says take the exact value from the credential provider's own screen |
+
+C1/C2 update (16 Oct 2026, **D**): the docs reference page for OPA policies now
+gives `gateway.policy` / `surface.policy` and `input.source_auth.*`, with
+`input.jwt.*` only for MCP tool policies. That agrees with the observed package
+names but conflicts with the **O** `input.jwt.*` claim for surface policy; left
+as observed, not overwritten. Still unverified on a live gateway.
 
 A fourth, cosmetic: **G p32** still says "A Fabric may include Trust Gateways",
 a leftover from the rename to Agent Gateway.
@@ -117,3 +124,19 @@ Checkable by reading a current guide, not by probing.
    presenting three possibilities is a cost the reader pays on every lookup.
 5. Update **Last full review** above, and add a `CHANGELOG.md` entry naming the
    gateway version checked.
+
+---
+
+## Docs-sync: OPA policies
+
+All **D**, <https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/reference/surfaces/opa-policies/>, checked 16 Oct 2026. Not observed on a gateway.
+
+| # | Claim | Where |
+| --- | --- | --- |
+| D1 | Gateway scope `gateway.policy`, surface and MCP-tool scope `surface.policy`; `channel.policy` rejected | configuration.md §3 |
+| D2 | Optional input keys are omitted when absent, so reads are `undefined` and deny under `default allow = false` | configuration.md §3 |
+| D3 | Sensitive headers stripped from `input.http.headers` | configuration.md §3 |
+| D4 | Enrich-with-agent-context toggle, default off, not on response policies | configuration.md §3 |
+| D5 | Rego edits create immutable versions with a SHA; Test panel dry-runs unsaved Rego | configuration.md §3 |
+| D6 | Deleting a referenced policy fails closed | configuration.md §3 |
+| D7 | Global enforcement, Monitor mode, deny-overrides order, fail-closed on unresolved Global | configuration.md §3 |
