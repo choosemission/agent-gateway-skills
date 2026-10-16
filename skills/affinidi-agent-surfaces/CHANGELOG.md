@@ -6,6 +6,8 @@ against**. A participant hitting a contradiction can then tell "stale" from
 
 ## Unreleased
 
+**Corrected — MCP tool control is a default plus exceptions, not a wildcard policy.** The skill described per-tool control as "MCP tool policy": one entry per tool, `*` as a wildcard, unmatched tools denied. The element observed on a hosted gateway (14 September 2026) is **MCP Tool Gating**: a default that allows or denies every tool, plus exception rules, so an unmatched tool follows the default (#3). `configuration.md` §3, `patterns.md`, `dashboard.md`, `troubleshooting.md` and `glossary.md` are rewritten around it; `CLAIMS.md` S10 is marked superseded and B17 added. The Affinidi docs (read 16 October 2026) describe regex matching and a separate per-tool binding mechanism, and disagree between pages on unmatched tools; these are recorded as unobserved. Wildcards, `tools/list` visibility and the refusal's wire format remain unrecorded.
+
 **Added — a schema mismatch on the inbound leg is loud.** A flat response-leg
 schema dropped on the inbound leg of a client that nests its descriptor saved
 without complaint, then refused every message with `422

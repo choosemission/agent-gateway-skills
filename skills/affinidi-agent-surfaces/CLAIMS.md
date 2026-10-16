@@ -11,6 +11,7 @@ re-verification mechanical instead of a re-read.
 | **G** | *Affinidi Trust Fabric — Agent Gateway Reference Guide* v0.3.10, August 2026, with page |
 | **O** | Observed on a running gateway, with date |
 | **A** | Direct guidance from the Affinidi team, August 2026 |
+| **D** | The online Affinidi Agent Gateway documentation (`docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/`), with page and the date read |
 
 **Verified against:** Reference Guide v0.3.10 · gateway observations from
 `train-soap.trustgateway.affinidi.io` (July–24 Aug 2026, since deprovisioned)
@@ -55,7 +56,7 @@ Checkable by reading a current guide, not by probing.
 | S7 | Target address schemes: `proxy://`, `a2a-proxy://{id}`, `fabric://` | G p32, p90–92 |
 | S8 | Gateway-level policy runs first and **a deny is final** | G p35 |
 | S9 | Policy scopes are Gateway, Agent Surfaces, Paywall | G p53, p61 |
-| S10 | An MCP `tools/call` with no matching tool-policy entry and no `*` wildcard is **denied** | G p91 |
+| S10 | **Superseded 14 Sep 2026 by B17.** An MCP `tools/call` with no matching tool-policy entry and no `*` wildcard is **denied**. Kept for traceability; the skill no longer states it as fact | G p91 (not observed) |
 | S11 | Consent modes: pre-authorize, on-demand, elicit | G p80 |
 | S12 | Delegation vault is keyed by agent identity + user identity hash + provider | G p80 |
 | S13 | Source auth methods: JWT Bearer, API Key, API Key Provider, DID Auth, mTLS. Multiple allowed, evaluated in order | G p33 |
@@ -95,6 +96,7 @@ Checkable by reading a current guide, not by probing.
 | B13 | A payload-extraction schema must mark fields `"x-identity": true`; without it the save is rejected `400 … no identity fields are declared`. Declared paths are relative to the **meta field**, and `identityFields` keys preserve the dotted path | 28 Aug 2026 | needs a surface |
 | B14 | Inbound identity travels as `…/agent-identity-binding/v1`; the response leg as `…/agent-identity-credential/v1`. Each leg's element mints its own surface-scoped `did:webvh`; the issuer is the gateway instance DID for both | 28 Aug 2026 | needs a surface |
 | B15 | The response-leg credential's subject is a **`workloadBinding`** — `agentIdentity`, `userIdentity.id` (the DID minted on the inbound leg), `delegated`, `traceId` — not `identityFields`. **Unresolved:** whether the Identity element mints this alone, or a Workload Binding element was also active | 28 Aug 2026 | needs a surface |
+| B17 | **MCP Tool Gating** is a default (allow every tool, or deny every tool) plus exception rules naming tools that go against it; an unmatched tool follows the default. It sits on the managed agent → external target leg. Tested: deny by default with one rule for `issue_read` — `issue_read` succeeded, other GitHub MCP tools were refused at the gateway. **Unknown:** rename of "MCP tool policy" or separate element; whether rules take patterns (docs D, 16 Oct 2026, say regular expressions, unanchored — not observed); `tools/list` visibility; wire status and body of a refusal. Docs D also describe per-tool policy bindings as a separate mechanism (exact, case-sensitive names; `tools/call` only) and disagree with each other on unmatched tools (reference: allowed with no Default Tool Policy; guide: denied) | 14 Sep 2026, hosted Affinidi Agent Gateway, version not recorded (#3); docs D read 16 Oct 2026 | needs a surface |
 | B16 | A payload-extraction schema on the **inbound** leg whose marked, required field is absent from the payload **saves successfully**, then refuses every message `422 identity_validation_failed: Identity field 'name' not found in payload`. Seen with a flat response-leg schema on the inbound leg of a client that nests under `agentIdentity`. **Unknown:** whether `required` or `x-identity` triggers it (the wording suggests the marker — inferred, not tested); the reverse swap on the response leg; MCP surfaces | Sep 2026, one hosted gateway, host not recorded; reported by a Lab reviewer (#4) | needs a surface |
 
 ## 4. Claims about our own work

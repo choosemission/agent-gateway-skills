@@ -64,7 +64,8 @@ Five separate concerns. Collapsing them is the classic error.
 | **Paywall scope** | The third policy scope, governing payment conditions. |
 | **Policy definition** | The stored Rego plus name, description and version. Reusable across surfaces. |
 | **Policy reference** | The pointer from a surface field to a definition. Updating the definition propagates without editing each surface. |
-| **MCP tool policy** | A per-tool entry on an MCP target. `*` is a wildcard, and a `tools/call` with no matching entry and no wildcard is **denied**. |
+| **MCP Tool Gating** | An element on the managed agent → external target leg of an MCP surface (observed 14 Sep 2026). A default that allows or denies every tool, plus exception rules naming the tools that go against it. An unmatched tool follows the default. |
+| **Per-tool policy binding** | A policy definition attached to one named tool on the MCP Proxy hop (Affinidi docs, read 16 Oct 2026). The Reference Guide's `*` wildcard and unmatched-denied rule was not observed; see `CLAIMS.md` S10. |
 
 ## Credentials, delegation and payment
 

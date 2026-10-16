@@ -157,7 +157,7 @@ about it — it is fastest, and it is authoritative.
 | **Workload Binding** | A signed VP per request execution | `identity-and-controls.md` §1 |
 | **Metadata Injection** | Merges a payload into outgoing requests | `identity-and-controls.md` §5 |
 | **Rate Limit** | Token-bucket limiting; rejects with 429 | `identity-and-controls.md` §4 |
-| **MCP Tools** | Per-tool policy | `configuration.md` §3 |
+| **MCP Tools** | Per-tool control. Observed (14 Sep 2026) as **MCP Tool Gating**: a default (allow or deny every tool) plus exception rules, on the managed agent → external target leg. The palette entry name and its relation to per-tool policy bindings are unconfirmed | `configuration.md` §3 |
 | **Networking** | Timeouts, retries, circuit breaker, mirroring | `identity-and-controls.md` §4 |
 | **Trust Registry** | Recognition and authorisation checks | `glossary.md` |
 | **Payment** | x402 or MPP payment policy | `glossary.md` |

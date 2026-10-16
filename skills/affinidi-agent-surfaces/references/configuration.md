@@ -194,13 +194,48 @@ Two recurring traps that look like gateway problems: an `iss` comparison failing
 on a **trailing slash**, and a **group claim absent** because the IdP was never
 told to include it (with Entra, an app-manifest change).
 
-### MCP tool policy
+### MCP tool control — MCP Tool Gating, and per-tool policy
 
-Finer-grained than the surface policy. On an MCP target, each entry names a tool
-and points at a policy definition. `*` is a wildcard. **A `tools/call` for a tool
-with no matching entry and no wildcard is denied** — an incomplete tool policy is
-a deny-list by accident. Tool visibility can also be filtered by JWT claims, so
-an unauthorised tool is invisible in `tools/list` rather than refused on call.
+Finer-grained than the surface policy. As of October 2026 there are two
+mechanisms, and the sources disagree about which one this skill used to describe.
+
+**MCP Tool Gating** (a palette element) is a **default plus exceptions**. The
+default either allows every tool or denies every tool; each rule then names tools
+that go *against* the default. On a deny-by-default gate the rules are the tools
+let through; on an allow-by-default gate they are the tools blocked. There are no
+separate allow and deny lists, and "unmatched tools are denied" is not a fixed
+rule: what happens to an unmatched tool depends on the default you chose.
+**Observed on a hosted gateway, 14 September 2026:** the element sits on the
+managed agent → external target leg (the Credential Delegation leg); deny by
+default with one rule for `issue_read` let `issue_read` through and refused other
+GitHub MCP tools at the gateway, although the delegated credential would have
+allowed them. Gateway version not recorded.
+
+**Per-tool policy bindings** (not a palette element) attach a policy definition
+to one named tool on the MCP Proxy hop. The Reference Guide (v0.3.10) described
+entries with a `*` wildcard and unmatched tools denied; that was **not observed**
+(`CLAIMS.md` S10, superseded).
+
+**Where the sources differ.** The Affinidi documentation
+([MCP Tool Gating](https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/reference/surfaces/mcp-tool-gating/),
+[per-tool policy bindings](https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/reference/surfaces/mcp-proxy-tool-policies/),
+[per-tool policies guide](https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/how-to-guides/policies/control-mcp-tool-access-with-per-tool-policies/),
+read 16 October 2026) says MCP Tool Gating matches tool names by **regular
+expression** (unanchored; `^…$` for exact), hides matching tools from
+`tools/list` and also blocks `tools/call`, and sits on the response edge from the
+external target or a Transit Point. It says per-tool bindings use exact,
+case-sensitive tool names, with no wildcard, and apply to `tools/call` only. On
+unmatched tools, those pages disagree with each other: the bindings reference says
+an uncovered tool is **allowed** when no Default Tool Policy is set; the guide
+says it is **denied**. **Prefer the running system** over any of these, and test
+an unmatched tool before relying on either.
+
+**Not established** (not tested; do not fill in by guessing): whether Tool Gating
+is a rename of the older tool policy or a separate element (the docs describe both
+as separate); whether Gating rules observed on a running gateway take regular
+expressions; whether a gated tool is hidden from `tools/list` or listed and then
+refused on `tools/call`; what a refused call looks like on the wire (status code
+and error body).
 
 ## 4. Target authentication — the static outbound credential
 

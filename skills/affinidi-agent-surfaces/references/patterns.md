@@ -37,7 +37,7 @@ everything and looks like a Rego bug.
 ## 2 — a REST backend given an MCP face
 
 ```
-Caller → MCP surface (policy, tool policy) → MCP Proxy (tools ← OpenAPI) → REST API
+Caller → MCP surface (policy, tool gating or per-tool policy) → MCP Proxy (tools ← OpenAPI) → REST API
 ```
 
 **Create the proxy** (Agent → Proxies → New MCP Proxy) with the API's base URL,
@@ -45,9 +45,12 @@ its OpenAPI 3.0 spec, and routing. Each path/method pair becomes a tool; Validat
 before saving. **Create an MCP surface** with target type MCP Proxy and pick it —
 the gateway writes the `proxy://…` reference. Then **configure surface controls**,
 all of which apply because the traffic is MCP: source auth on the Access Point, a
-surface policy, and **MCP Tool Policy** entries per tool. `*` is the wildcard, and
-a `tools/call` with **no matching entry and no wildcard is denied** — so an
-incomplete tool policy silently becomes a deny-list.
+surface policy, and per-tool control: **MCP Tool Gating** (a default plus
+exceptions: the default allows or denies every tool, and rules name the tools that
+go against it) or per-tool policy bindings. What an unmatched tool gets depends on
+the default you chose, so a gate set to deny by default with an incomplete rule
+list silently becomes an allow-list. See `configuration.md` §3 for the sources and
+what is unconfirmed.
 
 **Test** with the **Sandbox** tab on the proxy or surface, which browses the
 discovered catalogue and invokes tools from the dashboard. Then from outside:
