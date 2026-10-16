@@ -16,6 +16,15 @@ Troubleshooting gains the row; `identity-and-controls.md` §1 step 5 gains the
 observed error; `CLAIMS.md` B16. What triggers it, the reverse swap and MCP
 surfaces remain unrecorded.
 
+## 1.1.1 — 16 October 2026
+
+**Docs-sync: OPA policies.** Checked against the docs.affinidi.com OPA reference
+page on 16 Oct 2026 (not a live gateway). `configuration.md` §3 gains the
+docs-stated package names, omitted-input behaviour, header stripping, agent
+context enrichment, versions/dry-run, fail-closed delete and Global/Monitor
+enforcement. The docs' `input.source_auth.*` conflicts with observed
+`input.jwt.*` and is flagged, not changed. `CLAIMS.md` gains code **D**, D1–D7.
+
 ## 1.1.0 — 28 August 2026
 
 Checked against a live gateway on **`agentgateway.affinidi.io`** (A2A surface,

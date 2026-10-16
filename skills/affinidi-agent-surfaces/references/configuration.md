@@ -152,9 +152,12 @@ assume:
 | Observed on a running gateway (Jul–Aug 2026), surface level | `package surface.policy` |
 | Reference guide v0.3.10, surface-level example | `package surface.policy` |
 | Reference guide v0.3.10, delegation walkthrough, surface-attached element | `package gateway.authz` |
+| Docs page checked 16 Oct 2026, gateway / surface (incl. MCP tool) scope | `gateway.policy` / `surface.policy`; legacy `channel.policy` is rejected on save |
 
 Take the package from a working policy on the gateway in front of you, or from
-the console's own template, and report the inconsistency to Affinidi.
+the console's own template, and report the inconsistency to Affinidi. As of
+16 Oct 2026 the docs' reference page agrees with the observed names; only
+`gateway.authz` in the older guide remains out of line.
 
 ### What a policy can read
 
@@ -189,6 +192,28 @@ allow if {
 Start from `default allow = false` for anything beyond a throwaway test. A
 surface with `default allow = true` is callable by any anonymous client on the
 public internet.
+
+Docs-stated behaviour (checked 16 Oct 2026, prefer what you observe):
+
+- The input always has `http`, `gateway`, `channel`; `source_auth` (method
+  `jwt_bearer`, `api_key`, `did_auth`, `mtls` or `failed`), `mcp`, `a2a`,
+  `agent`, `payment`, `metadata` etc. are **omitted when absent**, so a rule
+  reading one is `undefined` and `default allow = false` denies silently. Test
+  existence or use `object.get`. The docs give `input.source_auth.*` for
+  surface policy but say **MCP tool policies must use `input.jwt.*`**.
+- `authorization`, `cookie`, `set-cookie` and any header containing `token`,
+  `secret`, `credential` or `apikey` are stripped from `input.http.headers`.
+- The Policy element's **Enrich policy input with agent context** (default off)
+  adds `input.agent` at a latency cost; unavailable on response policies.
+- A rego change makes a new immutable version (`sha256:` SHA shown in the
+  console); the **Test** panel dry-runs unsaved Rego against sample input.
+- **Deleting** a policy that is still referenced makes the referrer deny
+  everything (fail closed) until you attach another or remove the reference.
+- **Global** toggle enforces a policy on every gateway/surface, before the
+  local one (deny-overrides); **Monitor** logs without blocking. An enforced
+  Global assignment that cannot resolve fails its whole plane closed.
+
+Docs: <https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/reference/surfaces/opa-policies/>
 
 Two recurring traps that look like gateway problems: an `iss` comparison failing
 on a **trailing slash**, and a **group claim absent** because the IdP was never
