@@ -16,6 +16,16 @@ Troubleshooting gains the row; `identity-and-controls.md` §1 step 5 gains the
 observed error; `CLAIMS.md` B16. What triggers it, the reverse swap and MCP
 surfaces remain unrecorded.
 
+**Added — calling a surface as an A2A client.** The skill covered configuring
+payload extraction but not writing a client for surfaces you do not own. New
+`identity-and-controls.md` section: send the agent-identity extension by default
+(a payload-extraction surface refused a call without it, `422
+identity_validation_failed`, observed 30 Sep 2026), it is required only where
+configured, and it identifies without authenticating (29 Sep 2026: a plain
+`curl` got another agent's holder DID). Troubleshooting gains the row;
+`CLAIMS.md` B17–B19. The docs.affinidi.com Identity page does not cover the
+requirement (checked 17 Oct 2026), so it rests on the issue's observations (#8).
+
 ## 1.1.1 — 16 October 2026
 
 **Docs-sync: OPA policies.** Checked against the docs.affinidi.com OPA reference
