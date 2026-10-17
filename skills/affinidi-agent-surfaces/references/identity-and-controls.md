@@ -54,6 +54,12 @@ sender is who it says. When the DID must be anchored in something the caller has
 to possess, use mTLS, API key or JWT claim instead. Say which of the two you mean
 when you tell someone the traffic is "identified".
 
+Observed 29 September 2026 on one hosted gateway (reported in #8): a plain
+`curl` declaring another agent's `agentIdentity.name` was given the **same
+per-surface holder DID** as the real agent. A receiving agent also cannot tell
+callers apart by the issuer alone, since the issuer is the gateway DID. Even the
+(issuer, holder) pair is only as strong as that surface's source authentication.
+
 ### Payload extraction
 
 The deterministic-DID path: the gateway hashes fields the agent already sends
@@ -125,6 +131,32 @@ The failures to expect:
 - **A DID that changes on redeploy** — a version field was marked. Affinidi's own
   `identity-extension.json` marks `name`, `model` and `role` and deliberately
   leaves `version` out, for exactly this reason.
+
+### Calling a surface as an A2A client
+
+For someone writing a client that calls surfaces it does not own. Observed late
+September 2026 on one hosted gateway (#8); the 422 below is dated 30 September.
+
+- **Send the extension by default.** Declare
+  `https://fabric.affinidi.io/extensions/agent-identity/v1` in `extensions` and
+  the descriptor under the same key in `metadata`, on every call. A surface whose
+  Identity uses payload extraction refused a call without it: `422
+  identity_validation_failed` ("A2A request has no `extensions` array carrying
+  …/agent-identity/v1"). A surface that does not extract identity ignores it, so
+  sending it costs nothing and keeps the client callable everywhere. That a
+  non-extracting surface ignores it is reported in #8, not separately tested here.
+- **It is required only where the surface is configured for it.** Write "this
+  surface requires it", not "A2A calls require it".
+- **It identifies; it does not authenticate.** See *Payload extraction is
+  self-asserted* above. Pair it with source authentication (JWT, API key, DID
+  Auth, mTLS) when the receiver will act on who the caller is.
+
+As of 17 October 2026 the docs.affinidi.com Identity element page does not
+describe this requirement or the 422, and its Protocol extension page covers a
+separate *Required Extensions* rule that can be set on a surface. Prefer the
+running system. A reference client is
+[`recipes/hello-agent/a2a_client.py`](https://github.com/choosemission/agentlab-recipes/blob/main/recipes/hello-agent/a2a_client.py)
+in `choosemission/agentlab-recipes`.
 
 ### What each leg puts on the wire
 
