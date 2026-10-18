@@ -50,7 +50,11 @@ x-caller-did: anonymous
 x-caller-identity-source: gateway-computed
 ```
 
-and, inside a policy, empty caller claims.
+and, inside a policy, empty caller claims (`input.source_auth` absent).
+
+If the element is there but authentication failed, the policy sees
+`input.source_auth.method == "failed"` rather than claims; the element does not
+reject the caller itself (docs, Oct 2026), so deny on `method` in the policy.
 
 Add a **Caller Auth** element referencing a JWT verification strategy, and set
 caller identity extraction; `x-caller-did` then carries the extracted claim. The

@@ -35,7 +35,7 @@ cost from every user.
 | # | Claim | Conflict | Skill says |
 | --- | --- | --- | --- |
 | C1 | Policy package for a surface-attached policy | **G p97** `package surface.policy` · **G p86** `package gateway.authz` · **O** `surface.policy` | Presents all three, tells the reader to take it from a working policy or the console template |
-| C2 | OPA policy input shape | **G p86** `input.caller.jwt_bearer.*` · **G p97** `input.agent.*` · **O** `input.jwt.*`, `input.gateway.direction` | Presents all three, tells the reader to dump `input` on a test surface |
+| C2 | OPA policy input shape | **G p86** `input.caller.jwt_bearer.*` · **G p97** `input.agent.*` · **O** (Jul 2026) `input.jwt.*` · **O** (12 Oct 2026) `input.source_auth.claims.*`, `input.mcp.tool_name` on a surface policy · **D** (18 Oct 2026) two structs: `PolicyInput` → `input.source_auth.claims.*`, `McpPolicyContext` → `input.jwt.*` | **Largely resolved by scope** (#9): two structs, with a mapping table. The July `input.jwt.*` row is kept; reading it as an MCP tool policy is inferred. `input.caller.jwt_bearer.*` is absent from the current docs and marked do-not-use |
 | C3 | Gateway's OAuth callback path for delegation | **G p80** `https://<host>/oauth/callback/<provider>` · **O** (Jul 2026) `https://<host>/v1/identity/oauth/callback/<provider>` | Says take the exact value from the credential provider's own screen |
 
 C1/C2 update (16 Oct 2026, **D**): the docs reference page for OPA policies now
@@ -43,6 +43,11 @@ gives `gateway.policy` / `surface.policy` and `input.source_auth.*`, with
 `input.jwt.*` only for MCP tool policies. That agrees with the observed package
 names but conflicts with the **O** `input.jwt.*` claim for surface policy; left
 as observed, not overwritten. Still unverified on a live gateway.
+
+C2 update (18 Oct 2026, #9): observed 12 Oct 2026 that a surface policy reads
+`input.source_auth.claims.email` and `input.mcp.tool_name`, which agrees with the
+docs for surface policy. The tool-policy half (`input.jwt.*`, `input.mcp.method`)
+remains docs-only; not observed.
 
 A fourth, cosmetic: **G p32** still says "A Fabric may include Trust Gateways",
 a leftover from the rename to Agent Gateway.
@@ -103,6 +108,8 @@ Checkable by reading a current guide, not by probing.
 | B14 | Inbound identity travels as `…/agent-identity-binding/v1`; the response leg as `…/agent-identity-credential/v1`. Each leg's element mints its own surface-scoped `did:webvh`; the issuer is the gateway instance DID for both | 28 Aug 2026 | needs a surface |
 | B15 | The response-leg credential's subject is a **`workloadBinding`** — `agentIdentity`, `userIdentity.id` (the DID minted on the inbound leg), `delegated`, `traceId` — not `identityFields`. **Unresolved:** whether the Identity element mints this alone, or a Workload Binding element was also active | 28 Aug 2026 | needs a surface |
 | B16 | A payload-extraction schema on the **inbound** leg whose marked, required field is absent from the payload **saves successfully**, then refuses every message `422 identity_validation_failed: Identity field 'name' not found in payload`. Seen with a flat response-leg schema on the inbound leg of a client that nests under `agentIdentity`. **Unknown:** whether `required` or `x-identity` triggers it (the wording suggests the marker — inferred, not tested); the reverse swap on the response leg; MCP surfaces | Sep 2026, one hosted gateway, host not recorded; reported by a Lab reviewer (#4) | needs a surface |
+| B20 | On a surface policy (access point → managed agent leg, MCP surface, JWT Bearer caller context vs a Keycloak issuer, identity from `email`), `input.source_auth.claims.email`, `input.mcp.tool_name` and `input.mcp.params.arguments` held the caller email and tool call, and a `deny unless admin` rule worked as written | 12 Oct 2026, one running gateway, host not recorded (#9) | needs a surface |
+| B21 | With *From JWT Claims* identity extraction on a JWT Bearer surface, a request with no token and one with a junk token both got `500 … "from_jwt_claim requires jwt_bearer source auth on this surface"` instead of reaching the policy as `method: "failed"`. **Contradicts or qualifies D9.** Unknown: whether specific to *From JWT Claims*, to MCP, or by design | 12 Oct 2026, one running gateway, host not recorded (#9) | needs a surface |
 
 ## 4. Claims about our own work
 
@@ -140,3 +147,6 @@ All **D**, <https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gatew
 | D5 | Rego edits create immutable versions with a SHA; Test panel dry-runs unsaved Rego | configuration.md §3 |
 | D6 | Deleting a referenced policy fails closed | configuration.md §3 |
 | D7 | Global enforcement, Monitor mode, deny-overrides order, fail-closed on unresolved Global | configuration.md §3 |
+| D8 | Two input structs: `PolicyInput` (gateway, surface) and `McpPolicyContext` (MCP tool); `source_auth` shapes per method; field mapping table; per-path availability table; `input.source_auth` absent in tool policies | configuration.md §3 |
+| D9 | Caller Context validates but "no longer blocks a request on its own when validation fails"; deny on `input.source_auth.method`; `source_auth` present with `method: "failed"` after a failed auth; unprotected, the request is forwarded as if Caller Context were absent. **Not observed; see B21** | configuration.md §2, SKILL.md gotcha 4, troubleshooting.md |
+| D10 | `authorization`, `proxy-authorization`, `cookie`, `set-cookie` and headers containing `token`, `secret`, `credential`, `apikey`, `api-key` never appear in `input.http.headers` (extends D3) | configuration.md §3 |

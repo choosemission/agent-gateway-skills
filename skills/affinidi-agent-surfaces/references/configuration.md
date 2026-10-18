@@ -93,6 +93,22 @@ at once and are evaluated in order.**
 **required**, **optional**, or whether **anonymous** requests are allowed. This is
 the switch behind `x-caller-did: anonymous`.
 
+**Caller Context validates; it does not deny on its own.** As of 18 Oct 2026 the
+docs say a Caller Context element "no longer blocks a request on its own when
+validation fails", and that a policy must check `input.source_auth.method` to
+deny an unauthenticated caller (D9). Without such a rule the request is
+forwarded as if Caller Context were not configured. This replaces the skill's
+earlier description, which implied the element or its mode rejected the caller.
+What the **required** mode does under this behaviour is not established.
+
+One observation sits awkwardly with the docs (12 Oct 2026, one gateway, #9): on a
+surface with JWT Bearer caller context and *From JWT Claims* identity extraction,
+a request with **no token** and one with a **junk token** both got `500
+application/problem+json … "from_jwt_claim requires jwt_bearer source auth on
+this surface"`. The request never reached the policy as `method: "failed"`; the
+extraction step stopped it. Whether this is by design, or specific to
+*From JWT Claims*, is unknown; do not rely on either outcome (B21).
+
 ### The JWT verification strategy
 
 Created once at gateway level (**Management → Credentials → JWT Verification**),
@@ -161,18 +177,49 @@ the console's own template, and report the inconsistency to Affinidi. As of
 
 ### What a policy can read
 
-Also version-sensitive:
+**There are two input structs, not one.** Both use `package surface.policy`, with
+different field paths (docs page, read 18 Oct 2026; CLAIMS D8):
 
-| Source | Shape |
+| | Gateway and surface policies | MCP tool policies |
+| --- | --- | --- |
+| Struct | `PolicyInput` | `McpPolicyContext` |
+| Caller's JWT claims | `input.source_auth.claims.<name>` | `input.jwt.<name>` (flat map; absent for non-JWT callers) |
+| Tool name on `tools/call` | `input.mcp.tool_name` | `input.mcp.method` |
+| HTTP method / path | `input.http.method` / `.path` | `input.request.method` / `.path` |
+| Surface ID | `input.channel.config_id` | `input.channel.id` |
+| `input.source_auth` | present if Caller Context is configured | **absent** |
+
+Referencing `input.source_auth.*` in an MCP tool policy silently denies. The
+older guide's `input.caller.jwt_bearer.*` does not appear in the current docs
+reference; do not use it. `input.agent.*` (guide Q&A) is real, but only when
+*Extract Trust Registry Data* is on or the caller DID resolves.
+
+**Observed (12 Oct 2026, one running gateway, #9).** A surface policy on the
+access point → managed agent leg of an MCP surface, with JWT Bearer caller
+context against a Keycloak issuer and caller identity extracted from `email`,
+read the caller at `input.source_auth.claims.email`, and the tool call at
+`input.mcp.tool_name` and `input.mcp.params.arguments`. The July 2026 `input.jwt.*`
+observation did not record which kind of policy it was; reading it as an MCP
+tool policy is an inference from the docs, not something tested.
+
+`input.source_auth` shapes, by `method` (docs, not observed beyond JWT bearer):
+
+| `method` | Other fields |
 | --- | --- |
-| Reference guide, delegation walkthrough | `input.caller.jwt_bearer.iss`, `.groups` |
-| Reference guide, Q&A section | `input.agent.trust_verification` |
-| Observed on a running gateway (Jul 2026) | `input.jwt.*`, `input.http.method/.path/.headers`, `input.gateway.direction` |
+| `jwt_bearer` | `subject` (the `sub` claim), `claims` (all token claims) |
+| `api_key` | `key_name` (client ID tied to the key) |
+| `did_auth` | `did` |
+| `mtls` | `principal`, `fingerprint`, `subject_dn`, `issuer_dn`, `sans` |
+| `failed` | `attempted_method`, `reason` |
 
-By content the bundle carries: HTTP method, path and headers; direction and the
-source and target identities; surface context including name and selected
-variant; the caller's verified claims; protocol-specific detail such as the MCP
-method; `trust_check_results`; and payment and metadata context.
+`source_auth` is present whenever the surface has a Caller Context element,
+**including when authentication failed**. Other top-level inputs: `http`,
+`gateway`, `channel` always; `mcp` on inbound MCP only; `a2a` on A2A requests;
+`agent`, `extension_identity`, `payment`, `identity_binding`,
+`trust_check_results`, `metadata` only when their element ran. `source_auth` is
+never present on the outbound (Transit Point) leg, and `mcp` is only populated
+on inbound direct requests. The docs page has the full per-path availability
+table.
 
 **Print the input before writing rules against it.** A policy that returns
 `input` on a permissive test surface tells you the real shape in one request,
@@ -183,9 +230,10 @@ package surface.policy
 
 default allow = false
 
-# Anything with a verified caller identity.
+# Only a caller whose JWT was verified, and who carries the admin role.
 allow if {
-  input.jwt.sub
+  input.source_auth.method == "jwt_bearer"
+  object.get(input.source_auth, "claims", {}).role == "admin"
 }
 ```
 
@@ -199,9 +247,9 @@ Docs-stated behaviour (checked 16 Oct 2026, prefer what you observe):
   `jwt_bearer`, `api_key`, `did_auth`, `mtls` or `failed`), `mcp`, `a2a`,
   `agent`, `payment`, `metadata` etc. are **omitted when absent**, so a rule
   reading one is `undefined` and `default allow = false` denies silently. Test
-  existence or use `object.get`. The docs give `input.source_auth.*` for
-  surface policy but say **MCP tool policies must use `input.jwt.*`**.
-- `authorization`, `cookie`, `set-cookie` and any header containing `token`,
+  existence or use `object.get`. A rule on `input.agent.trust_verification`
+  denies when Trust Registry extraction is off, because the field is absent.
+- `authorization`, `proxy-authorization`, `cookie`, `set-cookie` and any header containing `token`,
   `secret`, `credential` or `apikey` are stripped from `input.http.headers`.
 - The Policy element's **Enrich policy input with agent context** (default off)
   adds `input.agent` at a latency cost; unavailable on response policies.

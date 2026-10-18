@@ -6,6 +6,16 @@ against**. A participant hitting a contradiction can then tell "stale" from
 
 ## Unreleased
 
+**Corrected — policy input has two structs; Caller Context does not deny on its
+own.** `configuration.md` §3 offered three candidate input paths and said to dump
+`input`. The docs OPA reference (read 18 Oct 2026) and a 12 Oct 2026 observation
+show surface policies read `input.source_auth.claims.*` and `input.mcp.tool_name`,
+while MCP tool policies read `input.jwt.*` and `input.mcp.method`. The same page
+says Caller Context "no longer blocks a request on its own"; one gateway instead
+returned a 500 from *From JWT Claims* extraction for a missing or junk token. Gotcha 4,
+the identity troubleshooting section and `CLAIMS.md` C2 are updated, with B20, B21
+and D8–D10 added (#9).
+
 **Added — a schema mismatch on the inbound leg is loud.** A flat response-leg
 schema dropped on the inbound leg of a client that nests its descriptor saved
 without complaint, then refused every message with `422
