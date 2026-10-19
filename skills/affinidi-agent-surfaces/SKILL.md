@@ -247,10 +247,17 @@ observed and where the vendor documentation disagrees with itself.
 drops the path and gives you a framework 404 from your own backend
 (`Cannot POST /`). Put the full path on the endpoint.
 
-**4. No caller context, and a policy that assumes one.** A surface with no Caller
-Auth element forwards `x-caller-did: anonymous` — identity was never switched on,
-not a user named "anonymous". A policy gating on caller claims against such a
-surface denies everything and looks like a Rego bug.
+**4. No caller context, or a policy that assumes one.** A surface with no Caller
+Context element forwards `x-caller-did: anonymous` — identity was never switched
+on, not a user named "anonymous" — and has no `input.source_auth`, so a policy
+gating on caller claims denies everything and looks like a Rego bug. The reverse
+trap: with the element present, a failed authentication is **not** rejected by
+the element (as of Oct 2026, per the docs); the policy sees
+`input.source_auth.method == "failed"` and must deny it itself. Check the
+method, and use `input.source_auth.claims.*` in surface policies but `input.jwt.*`
+in MCP tool policies. One observed exception: with *From JWT Claims* extraction,
+a missing or junk token got a 500 before the policy ran
+(`references/configuration.md` §2–3).
 
 **5. Tunnel churn.** A restarted tunnel changes the hostname, invalidating the
 target URL, the IdP redirect registration and your app's base URL at once — and
