@@ -103,7 +103,7 @@ A Transit Point may use a different **transit protocol** from its surface.
 | **HTTP(S) upstream** | `https://host/path` | The target already speaks the surface protocol. Put the **full path** on it. |
 | **MCP Proxy** | `proxy://…` | The backend is a REST API. Reads its OpenAPI spec, presents each path/method as an MCP tool, translates the calls. |
 | **A2A Proxy** | `a2a-proxy://{id}` | The backend is a Microsoft Copilot Studio agent over Bot Framework Direct Line. |
-| **Fabric** | `fabric://<gw>/<surface>` | The target is a surface on a peer gateway, wrapped in DIDComm and routed via a mediator. The caller's identity travels with it, so the second gateway decides for itself. |
+| **Fabric** | `fabric://<connection-point-id>/<remote-access-point-id>` | The target is a surface on a peer gateway (pick **via Gateway Connection** and the dashboard builds the URL), wrapped in DIDComm and routed via a mediator. The caller's identity travels with it, so the second gateway decides for itself. |
 
 "HTTP(S) upstream" is the **transport** by which the gateway reaches a target
 that speaks A2A or MCP. It is not permission to point a surface at an arbitrary

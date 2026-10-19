@@ -56,6 +56,26 @@ Verification Strategies** under *Management → Credentials*, and **Users** unde
 role cannot use, and enforcement is server-side regardless. If a control is
 missing rather than greyed, check your role before assuming a version difference.
 
+## The gateway record (Configuration → Connections)
+
+*Checked against the docs 19 Oct 2026; not observed.* A gateway record is either
+the **self gateway** (this instance; its DID is fixed at first startup, and it
+cannot be disabled) or a **remote** peer. Tabs: Overview, Remote (the peer's
+surfaces; Refresh re-queries it), Publishing, Integrations, Global Policy.
+
+- **Publishing** (remote only): no boxes ticked means *every* active surface is
+  visible to that peer; ticking any limits the peer to those.
+- **Global Policy**: on the self gateway it runs on all inbound traffic, on a
+  remote gateway on all outbound traffic to it, in both cases before surface
+  policies. A gateway deny cannot be overridden by a surface allow. Extra
+  policies must all allow.
+- Pairing needs a DIDComm mediator at v0.17.x or later on both gateways.
+- A remote gateway shows **Connection failed** when none of its connection
+  points is connected (retries back off).
+
+Docs: [Gateway](https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/reference/gateways/gateway/),
+[Gateways](https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/concepts/connections/gateways/).
+
 ## Anatomy of a surface
 
 A zoomable, pannable canvas showing the request path as nodes joined by legs:

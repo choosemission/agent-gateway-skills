@@ -139,4 +139,7 @@ All **D**, <https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gatew
 | D4 | Enrich-with-agent-context toggle, default off, not on response policies | configuration.md §3 |
 | D5 | Rego edits create immutable versions with a SHA; Test panel dry-runs unsaved Rego | configuration.md §3 |
 | D6 | Deleting a referenced policy fails closed | configuration.md §3 |
+| D11 | `fabric://` address is `<connection-point-id>/<remote-access-point-id>` (not gateway/surface); the **via Gateway Connection** routing mode builds it. Supersedes the G-based S7 spelling | configuration.md §1, SKILL.md, glossary.md. D, concepts/connections/gateways, 19 Oct 2026 |
+| D12 | Gateway record: self vs remote, fixed DID, Publishing tab (empty = all exposed), Global Policy direction and deny-wins, Connection failed alert | dashboard.md. D, reference/gateways/gateway, 19 Oct 2026 |
+| D13 | Pairing needs a DIDComm mediator v0.17.x+ on both gateways | dashboard.md. D, concepts/connections/gateways, 19 Oct 2026 |
 | D7 | Global enforcement, Monitor mode, deny-overrides order, fail-closed on unresolved Global | configuration.md §3 |
