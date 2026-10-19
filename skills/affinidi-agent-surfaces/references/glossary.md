@@ -27,7 +27,7 @@ anything configurable is in `configuration.md` and `identity-and-controls.md`.
 | **MCP** | Model Context Protocol. Enables per-tool policy and MCP-specific metadata handling. |
 | **MCP Proxy** | Presents a REST/OpenAPI backend as an MCP tool catalogue and translates the calls. Target address `proxy://…`. |
 | **A2A Proxy** | Bridges A2A to a backend on another interface — today Bot Framework Direct Line for Microsoft Copilot Studio. Address `a2a-proxy://{id}`. |
-| **Fabric endpoint** | A target resolved through a peer gateway over DIDComm rather than the open network. Address `fabric://<gateway>/<surface>`. |
+| **Fabric endpoint** | A target resolved through a peer gateway over DIDComm rather than the open network. Address `fabric://<connection-point-id>/<remote-access-point-id>`. |
 | **Fabric** | The set of DIDComm appliances connected through Connection Points — gateways, trust registries. |
 | **Connection Point** | The DIDComm endpoint another fabric appliance uses to pair with this one. Not an Access Point: it pairs gateways, it does not serve callers. |
 | **Gateway-to-Gateway (G2G)** | A call routed through the fabric. Identity, policy and payment controls apply on **both** gateways. |

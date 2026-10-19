@@ -16,6 +16,15 @@ Troubleshooting gains the row; `identity-and-controls.md` §1 step 5 gains the
 observed error; `CLAIMS.md` B16. What triggers it, the reverse swap and MCP
 surfaces remain unrecorded.
 
+## 1.1.2 — 19 October 2026
+
+**Docs-sync: Gateway.** Checked against the docs.affinidi.com Gateway reference
+and Gateways concept pages on 19 Oct 2026 (not a live gateway). The `fabric://`
+address is `<connection-point-id>/<remote-access-point-id>`, not
+`<gw>/<surface>` (SKILL.md, configuration.md, glossary.md). `dashboard.md` gains
+a short gateway-record section: self vs remote, Publishing, Global Policy,
+mediator version. `CLAIMS.md` D11–D13.
+
 ## 1.1.1 — 16 October 2026
 
 **Docs-sync: OPA policies.** Checked against the docs.affinidi.com OPA reference

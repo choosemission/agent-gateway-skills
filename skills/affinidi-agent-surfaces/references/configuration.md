@@ -35,7 +35,7 @@ the Gateway (see `glossary.md`, *Which appliance owns this?*).
 | **HTTP(S) upstream** | `https://host/path` | The target already speaks the surface protocol |
 | **MCP Proxy** | `proxy://…` | The backend is a REST API |
 | **A2A Proxy** | `a2a-proxy://{id}` | The backend is a Copilot Studio agent over Direct Line |
-| **Fabric** | `fabric://<gw>/<surface>` | The target is a surface on a peer gateway |
+| **Fabric** | `fabric://<connection-point-id>/<remote-access-point-id>` | The target is a surface on a peer gateway |
 
 Put the **full path** on an HTTP(S) target (`https://host/mcp`, not
 `https://host`). A base URL drops the path and produces a 404 from your own
