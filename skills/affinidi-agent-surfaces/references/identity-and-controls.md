@@ -70,14 +70,19 @@ Configuring it:
 1. Drag the **Identity** element onto the leg you mean — inbound for the caller,
    the response leg for the managed agent.
 2. Set extraction type to **Payload**.
-3. Set the **meta field** to match how that sender nests its descriptor, and
-   leave it **empty** when the descriptor is flat. Declared field paths are
-   relative to it.
+3. Write the schema to match **exactly what that sender puts under the
+   extension URI** in the message metadata. Nothing un-nests it and nothing
+   rewrites its paths: a sender that wraps its fields in `agentIdentity` needs a
+   schema containing that wrapper, and one that sends them flat needs a flat
+   schema. The console may also show a **meta field**; as of October 2026 what it
+   does is not established (see below), and the schemas here work without
+   setting it.
 4. Give it a JSON Schema and **mark every identity field with
    `"x-identity": true`**. That marker is what declares a field as contributing
    to the DID. A schema that describes the payload but marks nothing is rejected:
    `400 … identity extraction is configured (meta_field='…') but no identity
-   fields are declared`.
+   fields are declared`. That message shows the gateway names a `meta_field`
+   in its own error; it does not say what the field does.
 5. Optionally mark fields **required** (requests omitting them are rejected) or
    give them **value constraints** (only a named model or provider may call).
    Observed September 2026 on one hosted gateway: an inbound schema whose marked,
@@ -109,13 +114,27 @@ identity on both legs needs two different schemas. In Affinidi's own `a2a/`
 sample:
 
 - the **client** sends `{"agentIdentity": {"name": …}}` under the extension key
-  → meta field `agentIdentity`, path `agentIdentity.name`
+  → the schema contains the `agentIdentity` object; the marked path is
+  `agentIdentity.name`
 - the **server** sends `{"name": …, "model": …, "role": …}` flat under the same
-  key → meta field empty, paths `name`, `model`, `role`
+  key → a flat schema; paths `name`, `model`, `role`
 
-The credential preserves whatever path you declared, so `identityFields` coming
-back as `{"agentIdentity.name": …}` on a leg you meant to be flat tells you the
-meta field was left set.
+The credential preserves the path as the schema declares it, so
+`identityFields: {"agentIdentity.name": …}` is what a schema that contains the
+wrapper produces. It is not a sign of misconfiguration unless you meant that
+leg's sender to write its fields flat.
+
+**What the meta field does is not established.** Observed (see CLAIMS B13b) on one
+surface: an inbound schema containing the `agentIdentity` wrapper extracted
+`agentIdentity.name`, which a prefix-stripping meta field would not allow. A
+guess, not a mechanism: it names the key under MCP's `_meta` (the docs'
+Identity page refers to `_meta.[field]`, read 20 Oct 2026) and is unused for A2A.
+Where this disagrees with the running system, prefer the running system.
+
+A schema that is valid JSON Schema but does not match how the sender nests can
+save without complaint. On the inbound leg that has been seen to be refused
+loudly (step 5); other cases are not recorded. Either way, derive the schema
+with *Capture Identity Payload* rather than from memory.
 
 The failures to expect:
 

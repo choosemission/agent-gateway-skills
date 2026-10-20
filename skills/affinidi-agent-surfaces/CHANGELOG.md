@@ -6,6 +6,15 @@ against**. A participant hitting a contradiction can then tell "stale" from
 
 ## Unreleased
 
+**Corrected — the meta field does not make paths relative (#2).** `identity-and-controls.md`
+§1 taught that the Identity element's meta field names the key a descriptor nests
+under and that declared paths are relative to it, and read dotted `identityFields`
+keys as a stray meta field. That was inferred, never confirmed, and a working
+surface contradicts it: a schema containing the `agentIdentity` wrapper extracts
+`agentIdentity.name`. The schema now simply matches what the sender writes; what
+the meta field does is recorded as not established. The troubleshooting row is
+reversed and `CLAIMS.md` B13 is split into B13a/B13b, with B13c kept as superseded.
+
 **Corrected — policy input has two structs; Caller Context does not deny on its
 own.** `configuration.md` §3 offered three candidate input paths and said to dump
 `input`. The docs OPA reference (read 18 Oct 2026) and a 12 Oct 2026 observation
