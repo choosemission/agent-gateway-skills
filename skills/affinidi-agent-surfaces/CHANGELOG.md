@@ -4,6 +4,14 @@ Each entry records what changed and **which gateway version it was checked
 against**. A participant hitting a contradiction can then tell "stale" from
 "wrong".
 
+## 1.1.3 — 26 October 2026
+
+**Added — STS clients and token exchange.** The skill never mentioned the
+Management → Credentials → STS Clients tab or the `/oauth2/token` exchange.
+`configuration.md` §2 gains a short section (fields, ID-JAG, impersonation,
+`invalid_client`); `dashboard.md` lists the tab; `CLAIMS.md` D14–D17. Checked
+against the docs on 26 Oct 2026; not observed on a gateway.
+
 ## Unreleased
 
 **Corrected — policy input has two structs; Caller Context does not deny on its

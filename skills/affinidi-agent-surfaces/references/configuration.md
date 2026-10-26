@@ -131,6 +131,31 @@ policy.
 never falls back to allowing unverified traffic once inbound authentication is
 configured. Deleting a strategy immediately breaks every surface referencing it.
 
+### STS clients and token exchange
+
+Separate from Caller Auth: an **STS Client** (**Management → Credentials → STS
+Clients**) is an agent registered to call the gateway's token endpoint
+`/oauth2/token` (RFC 8693) and trade a token it holds for a narrower one scoped
+to a downstream audience. Surfaces do not reference it.
+
+- **Client ID** (unique) plus a **Client Secret Reference** to a secret in
+  **Secrets**; the picker lists only secrets tagged `sts` unless toggled.
+- Optional limits, all open when blank: **Allowed Audiences**, **Allowed
+  Scopes**, **Allowed Subject-Token Audiences** (Verifiable Presentations
+  exempt), **Allowed Subject Token Types** (JWT, ID Token, ID-JAG, Verifiable
+  Presentation), **Max Token TTL**.
+- **Allow issuing ID-JAG** (off): the client gets an ID-JAG, redeemed once, by the
+  same client, in a second `/oauth2/token` call. Redemption only narrows scopes.
+- **Allow impersonation** (off, recommended): when off, an exchange without an
+  actor token records the client as the delegating actor (`act` claim).
+- Every exchange is evaluated by the policy engine; attempts are throttled per
+  client id and source address.
+- Deleting a client makes its agents fail with `invalid_client`.
+
+Docs: <https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/concepts/token-exchange/>,
+<https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/reference/authentication/sts-clients/>
+(`CLAIMS.md` D14–D17).
+
 ### On the surface: the Caller Auth element
 
 Drag **Caller Auth** onto the leg between access point and managed agent, set the

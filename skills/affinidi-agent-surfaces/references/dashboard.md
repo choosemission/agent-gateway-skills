@@ -46,8 +46,9 @@ Leave the surface, create the object, come back, select it.
 | **Configuration** | Connections, Integrations, Settings *(incl. Users)* | Peer gateways, mediators, trust registries; integrations; system settings. |
 | **Monitoring** | Metrics, Logs, Audit, System, Tasks | Live operational views. Tasks is one row per running surface. |
 
-Two screens are tabs rather than top-level items and are easy to hunt for: **JWT
-Verification Strategies** under *Management → Credentials*, and **Users** under
+Three screens are tabs rather than top-level items and are easy to hunt for: **JWT
+Verification Strategies** and **STS Clients** (`configuration.md` §2) under
+*Management → Credentials*, and **Users** under
 *Configuration → Settings*.
 
 **Roles.** Administrator (full access), Power User (mediators and proxies; may
