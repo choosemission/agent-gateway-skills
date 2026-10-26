@@ -153,3 +153,14 @@ All **D**, <https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gatew
 | D8 | Two input structs: `PolicyInput` (gateway, surface) and `McpPolicyContext` (MCP tool); `source_auth` shapes per method; field mapping table; per-path availability table; `input.source_auth` absent in tool policies | configuration.md §3 |
 | D9 | Caller Context validates but "no longer blocks a request on its own when validation fails"; deny on `input.source_auth.method`; `source_auth` present with `method: "failed"` after a failed auth; unprotected, the request is forwarded as if Caller Context were absent. **Not observed; see B21** | configuration.md §2, SKILL.md gotcha 4, troubleshooting.md |
 | D10 | `authorization`, `proxy-authorization`, `cookie`, `set-cookie` and headers containing `token`, `secret`, `credential`, `apikey`, `api-key` never appear in `input.http.headers` (extends D3) | configuration.md §3 |
+
+## Docs-sync: token exchange and STS clients
+
+All **D**, <https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/concepts/token-exchange/> and <https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/reference/authentication/sts-clients/>, checked 26 Oct 2026. Not observed on a gateway.
+
+| # | Claim | Where |
+| --- | --- | --- |
+| D14 | STS Clients live under Management → Credentials; fields (Client ID unique, Client Secret Reference to a Secret with `sts` tag filter, allowed audiences/scopes/subject audiences/subject token types, Max Token TTL) and blank = unrestricted | configuration.md §2, dashboard.md |
+| D15 | Exchange endpoint `/oauth2/token` (RFC 8693); every exchange evaluated by the policy engine; throttled per client id and source address | configuration.md §2 |
+| D16 | Allow issuing ID-JAG (off): single-use, redeemed by the same client, scopes only narrowed. Allow impersonation (off): client recorded as actor (`act`) | configuration.md §2 |
+| D17 | Deleting an STS Client makes its agents fail `invalid_client` | configuration.md §2 |
