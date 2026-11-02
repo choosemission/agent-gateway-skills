@@ -26,6 +26,15 @@ Troubleshooting gains the row; `identity-and-controls.md` §1 step 5 gains the
 observed error; `CLAIMS.md` B16. What triggers it, the reverse swap and MCP
 surfaces remain unrecorded.
 
+## 1.1.4 — 2 November 2026
+
+**Corrected — Workload Binding caller context source; added policy-side view.**
+The source was "fixed" to bearer JWT on the MA→External leg; the docs list
+bearer JWT and DID authentication there and default to Transit token elsewhere.
+Added the `input.identity_binding` shape and assurance modes seen by the
+receiving gateway. Checked against docs.affinidi.com on 2 Nov 2026; not observed
+live. `CLAIMS.md` D18–D19.
+
 ## 1.1.2 — 19 October 2026
 
 **Docs-sync: Gateway.** Checked against the docs.affinidi.com Gateway reference
