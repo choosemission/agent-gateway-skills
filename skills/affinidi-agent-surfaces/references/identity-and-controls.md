@@ -195,10 +195,11 @@ effect, and the gateway log records a "skipped" entry.
 **Workload Binding** is a separate element producing a signed VP **per request
 execution**:
 
-- **Enable workload binding** — the toggle. If the audit log shows no records,
-  this is usually why.
-- **Caller context source** — fixed to *Authorization bearer JWT* on the
-  MA→External leg; on other transit points, that or *Transit token*.
+- **Enable workload binding** — the toggle; default On per the docs. If the
+  audit log shows no records, check it.
+- **Caller context source** — default *Transit token*; also *Authorization
+  bearer JWT* and *DID authentication* (needs Caller Context set to DID Auth).
+  *Transit token* is not offered on the MA→External leg.
 - **Caller field allowlist** — top-level claims copied into the binding (`sub`,
   `email`, `name`, `org`). Empty binds agent identity only. **Nested claim paths
   are not supported.**
@@ -207,6 +208,17 @@ execution**:
 - **PII obfuscation** — a surface setting replacing subject and email with a
   deterministic, non-reversible representation, so records stay correlatable
   without exposing identifiers. Off by default.
+
+On a Transit Point leg the target must be a connected gateway (**Endpoint Type**
+*via Gateway Connection*, a `fabric://` address). The receiving gateway verifies
+the VP against the sender's issuer key and exposes it to policy as
+`input.identity_binding` (`verified`, `agent.did`, `caller.fields`,
+`caller.assurance`, `delegated`, `issuer_gateway`); a failed or missing VP gives
+`verified: false`, which a policy can deny on. `caller.assurance` is
+`gateway_attested` by default, or `caller_credential_chained` with *Chain
+caller-supplied credentials*. Not observed. Docs:
+<https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/concepts/workload-binding/>,
+<https://docs.affinidi.com/products/affinidi-trust-fabric/agent-gateway/reference/surfaces/outbound-binding/>
 
 Identity VCs attest *who an agent is*. Workload binding VPs attest *what
 happened*: which user, through which agent, called which tool, with what intent,
